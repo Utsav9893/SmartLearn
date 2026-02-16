@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Courses | SmartLearn</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Specific Course Page Enhancements */
+        .filter-container {
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .course-card {
+            display: block; /* Ensure visibility */
+            perspective: 1000px; /* For 3D effect */
+        }
+
+        /* 3D Hover Effect */
+        .course-card-inner {
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .course-card:hover .course-card-inner {
+            transform: rotateY(5deg) rotateX(5deg);
+        }
+
+        .course-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .bg-tech { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .bg-design { background: rgba(217, 70, 239, 0.2); color: #f0abfc; }
+        .bg-business { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="scrolled">
+        <div class="logo"><h2>Smart<span style="color: var(--primary)">Learn</span></h2></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="instructors.html">Instructors</a></li>
+        </ul>
+        <a href="login.html" class="btn btn-outline">Login</a>
+    </nav>
+
+    <section class="container">
+        <div class="filter-container">
+            <h1 style="font-size: 2.8rem; margin-bottom: 10px;">Find Your Next Skill</h1>
+            
+            <div class="search-wrapper">
+                <input type="text" id="courseSearch" placeholder="What do you want to learn?">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <div class="filter-group">
+                <button class="btn btn-outline filter-btn active" data-category="all">All Courses</button>
+                <button class="btn btn-outline filter-btn" data-category="design">Design</button>
+                <button class="btn btn-outline filter-btn" data-category="tech">Technology</button>
+                <button class="btn btn-outline filter-btn" data-category="business">Business</button>
+            </div>
+        </div>
+
+        <div class="grid-3" id="courseGrid">
+            <div class="course-card" data-category="tech">
+                <div class="glass-card course-card-inner">
+                    <div style="height: 160px; background: linear-gradient(45deg, #1e293b, #3b82f6); border-radius: 10px; margin-bottom: 15px; display: grid; place-items: center;">
+                        <i class="fas fa-microchip fa-3x" style="color: white; opacity: 0.8;"></i>
+                    </div>
+                    <span class="course-badge bg-tech">Technology</span>
+                    <h3>Machine Learning A-Z</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Master Python and Data Science with hands-on projects.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 1.2rem; font-weight: bold;">₹94.99</span>
+                        <a href="course-detail.html" class="btn btn-primary" style="padding: 8px 15px;">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-card" data-category="design">
+                <div class="glass-card course-card-inner">
+                    <div style="height: 160px; background: linear-gradient(45deg, #4c1d95, #d946ef); border-radius: 10px; margin-bottom: 15px; display: grid; place-items: center;">
+                        <i class="fas fa-bezier-curve fa-3x" style="color: white; opacity: 0.8;"></i>
+                    </div>
+                    <span class="course-badge bg-design">Design</span>
+                    <h3>Advanced Interaction Design</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Create stunning micro-interactions and animations.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 1.2rem; font-weight: bold;">₹49.00</span>
+                        <a href="course-detail.html" class="btn btn-primary" style="padding: 8px 15px;">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-card" data-category="business">
+                <div class="glass-card course-card-inner">
+                    <div style="height: 160px; background: linear-gradient(45deg, #064e3b, #10b981); border-radius: 10px; margin-bottom: 15px; display: grid; place-items: center;">
+                        <i class="fas fa-briefcase fa-3x" style="color: white; opacity: 0.8;"></i>
+                    </div>
+                    <span class="course-badge bg-business">Business</span>
+                    <h3>Digital Marketing 2026</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">SEO, Content Marketing, and Social Media Strategy.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 1.2rem; font-weight: bold;">₹25.00</span>
+                        <a href="course-detail.html" class="btn btn-primary" style="padding: 8px 15px;">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-card" data-category="tech">
+                <div class="glass-card course-card-inner">
+                    <div style="height: 160px; background: linear-gradient(45deg, #1e1b4b, #4338ca); border-radius: 10px; margin-bottom: 15px; display: grid; place-items: center;">
+                        <i class="fas fa-terminal fa-3x" style="color: white; opacity: 0.8;"></i>
+                    </div>
+                    <span class="course-badge bg-tech">Technology</span>
+                    <h3>Cybersecurity Essentials</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Protect networks and build secure applications.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 1.2rem; font-weight: bold;">₹59.99</span>
+                        <a href="course-detail.html" class="btn btn-primary" style="padding: 8px 15px;">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    <script>
+        // Inline filtering script to ensure immediate execution for this page
+        const buttons = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.course-card');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from buttons
+                buttons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                button.style.borderColor = 'var(--primary)';
+
+                const filter = button.getAttribute('data-category');
+
+                cards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = 'block';
+                        // Add a small fade-in animation
+                        card.style.opacity = '0';
+                        setTimeout(() => { card.style.opacity = '1'; }, 10);
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

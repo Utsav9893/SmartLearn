@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartLearn | Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo"><h2>Smart<span style="color: var(--primary)">Learn</span></h2></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="auth-btns">
+            <a href="login.html" class="btn">Login</a>
+            <a href="register.html" class="btn btn-primary">Join Now</a>
+        </div>
+    </nav>
+
+    <header class="hero-slider">
+    <div class="slides">
+        <div class="slide active">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1350&q=80" alt="Indian students studying">
+            <div class="hero-overlay">
+                <h1>Master Skills for <span style="color: var(--primary)">New India</span></h1>
+                <p>Join 1 Lakh+ students learning from India's top industry mentors.</p>
+                <a href="courses.html" class="btn btn-primary">Browse Courses</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1350&q=80" alt="Digital learning">
+            <div class="hero-overlay">
+                <h1>Learn Anytime, Anywhere</h1>
+                <p>High-quality courses starting from only ₹499.</p>
+                <a href="register.html" class="btn btn-primary">Join for Free</a>
+            </div>
+        </div>
+    </div>
+    <div class="slider-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+    </div>
+</header>
+
+<a href="https://wa.me/911234567890" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+    <span>Join Community</span>
+</a>
+
+    <section class="container">
+        <h2 style="margin-bottom: 40px;">Featured Courses</h2>
+        <div class="grid-3">
+            <div class="glass-card course-card">
+                <div style="height: 180px; background: #1e293b; border-radius: 12px; margin-bottom: 20px;"></div>
+                <span style="color: var(--primary); font-size: 0.8rem; font-weight: bold;">DEVELOPMENT</span>
+                <h3 style="margin: 10px 0;">Full-Stack Web Mastery</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Master React, Node.js and MongoDB from scratch.</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold;">$89.99</span>
+                    <button onclick="enrollNow('Full-Stack Web Mastery')" class="btn btn-primary" style="padding: 8px 15px;">Enroll</button>
+                </div>
+            </div>
+            <div class="glass-card course-card">
+                <div style="height: 180px; background: #1e293b; border-radius: 12px; margin-bottom: 20px;"></div>
+                <span style="color: var(--secondary); font-size: 0.8rem; font-weight: bold;">DESIGN</span>
+                <h3 style="margin: 10px 0;">UI/UX Advanced Theory</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Learn typography, spacing, and glassmorphism.</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold;">$45.00</span>
+                    <button onclick="enrollNow('UI/UX Advanced Theory')" class="btn btn-primary" style="padding: 8px 15px;">Enroll</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

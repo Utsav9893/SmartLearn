@@ -1,0 +1,199 @@
+/* --- Global Variables --- */
+:root {
+    --primary: #8b5cf6;
+    --secondary: #d946ef;
+    --bg-dark: #0b0e14;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+    background-image: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #0b0e14 100%);
+    min-height: 100vh;
+}
+
+.container {
+    padding: 120px 8% 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* --- Navigation --- */
+nav {
+    position: fixed;
+    top: 0; width: 100%; z-index: 1000;
+    padding: 25px 8%;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: var(--transition);
+}
+
+nav.scrolled {
+    background: rgba(11, 14, 20, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 15px 8%;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.nav-links { display: flex; gap: 30px; list-style: none; }
+.nav-links a {
+    color: var(--text-main); text-decoration: none;
+    font-size: 0.95rem; font-weight: 500; opacity: 0.7;
+}
+.nav-links a:hover { opacity: 1; color: var(--primary); }
+
+/* --- Buttons --- */
+.btn {
+    padding: 12px 28px; border-radius: 12px; border: none;
+    cursor: pointer; font-weight: 600; transition: var(--transition);
+    text-decoration: none; display: inline-block;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+}
+
+.btn-outline {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+}
+
+.btn-outline.active {
+    border-color: var(--primary);
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--primary);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+/* --- Clean Glassmorphism Cards --- */
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 25px;
+    transition: var(--transition);
+}
+
+/* Stable Modern Hover Lift */
+.course-card:hover .glass-card {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Inputs --- */
+input, textarea {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    padding: 14px 20px;
+    border-radius: 12px;
+    color: white;
+    width: 100%;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* --- Animations --- */
+@keyframes slideIn {
+    from { transform: translateX(50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* --- Mobile Fixes --- */
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .container { padding: 100px 5% 40px; }
+    h1 { font-size: 2.2rem !important; }
+}
+/* --- Hero Slider --- */
+.hero-slider {
+    position: relative;
+    height: 85vh;
+    width: 100%;
+    overflow: hidden;
+}
+.slide {
+    position: absolute;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    display: flex; align-items: center; justify-content: center;
+}
+.slide.active { opacity: 1; }
+.slide img {
+    position: absolute;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.35);
+}
+.hero-overlay { position: relative; z-index: 10; text-align: center; padding: 0 5%; }
+.hero-overlay h1 { font-size: 3.5rem; margin-bottom: 20px; }
+
+.slider-dots {
+    position: absolute; bottom: 30px; left: 50%;
+    transform: translateX(-50%); display: flex; gap: 10px; z-index: 20;
+}
+.dot { width: 12px; height: 12px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
+.dot.active { background: var(--primary); }
+
+/* --- WhatsApp Floating Button --- */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background-color: #25d366;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    z-index: 1000;
+    transition: var(--transition);
+}
+.whatsapp-float i { font-size: 1.5rem; }
+.whatsapp-float:hover {
+    transform: scale(1.05) translateY(-5px);
+    background-color: #128c7e;
+}
+
+/* Indian Rupee Color Accent */
+.price-tag { color: #22c55e !important; font-weight: bold; font-size: 1.2rem; }
+
+@media (max-width: 768px) {
+    .whatsapp-float span { display: none; } /* Show only icon on mobile */
+    .whatsapp-float { padding: 15px; border-radius: 50%; }
+}
