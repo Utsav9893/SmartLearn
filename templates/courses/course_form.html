@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Course - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 40px 0; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    .modern-card { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #f1f5f9; padding: 40px; }
+    .modern-card-header { text-align: center; margin-bottom: 30px; }
+    .modern-card-header h3 { font-weight: 700; color: #0f172a; }
+    .modern-card-header i { font-size: 40px; color: #9333ea; margin-bottom: 15px; }
+    .form-label-custom { font-weight: 600; color: #334155; margin-bottom: 8px; }
+    .form-control-custom { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; background: #f8fafc; transition: 0.3s; }
+    .form-control-custom:focus { border-color: #9333ea; background: #fff; box-shadow: 0 0 0 4px rgba(147,51,234,0.1); outline: none; }
+    .btn-primary-custom { background: var(--theme-gradient); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 600; border: none; width: 100%; transition: 0.3s; }
+    .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(147,51,234,0.3); }
+    .btn-secondary-custom { background: transparent; color: #64748b; border: 2px solid #cbd5e1; padding: 12px 20px; border-radius: 12px; font-weight: 600; width: 100%; text-align: center; text-decoration: none; display: block; margin-top: 10px; transition: 0.3s;}
+    .btn-secondary-custom:hover { background: #f1f5f9; color: #0f172a; }
+</style>
+
+<div class="container theme-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <i class="fas fa-laptop-code"></i>
+                    <h3>{{ action }} Course</h3>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="title" class="form-label-custom">Course Title</label>
+                        <input type="text" class="form-control-custom" id="title" name="title" value="{% if course %}{{ course.title }}{% endif %}" required placeholder="e.g. Advanced Python">
+                    </div>
+                    <div class="mb-4">
+                        <label for="description" class="form-label-custom">Description</label>
+                        <textarea class="form-control-custom" id="description" name="description" rows="5" required placeholder="What will students learn?">{% if course %}{{ course.description }}{% endif %}</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check" style="display: flex; align-items: center; gap: 10px;">
+                            <input class="form-check-input" type="checkbox" id="is_published" name="is_published" style="width: 20px; height: 20px; accent-color: #9333ea; cursor: pointer;" {% if course and course.is_published %}checked{% endif %}>
+                            <label class="form-check-label form-label-custom mb-0" for="is_published" style="cursor: pointer;">
+                                Publish Course (Visible to students)
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary-custom">{{ action }} Course</button>
+                    <a href="{% if course %}{% url 'courses:course_detail' course.pk %}{% else %}{% url 'courses:course_list' %}{% endif %}" class="btn-secondary-custom">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

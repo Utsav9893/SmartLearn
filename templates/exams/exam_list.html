@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}My Exams - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 20px 0; padding-top: 5px; color: #0f172a; --theme-blue: #0072ff; --theme-purple: #9333ea; --theme-pink: #ec4899; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    
+    .page-header h1 { font-size: 32px; font-weight: 700; background: linear-gradient(135deg, var(--theme-blue), var(--theme-purple), var(--theme-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    .exam-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 25px; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+    .exam-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.18); border-color: #c4b5fd; }
+    
+    .exam-meta-box { background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; font-size: 13px; color: #64748b; font-weight: 500; }
+    .exam-meta-box span { display: flex; align-items: center; gap: 5px; }
+    .exam-meta-box i { color: var(--theme-purple); }
+
+    .btn-custom { padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; width: 100%; }
+    .btn-primary-custom { background: var(--theme-gradient); color: white; }
+    .btn-primary-custom:hover { background: linear-gradient(135deg, #005bb5, #7e22ce); color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3); }
+    .btn-outline-custom { background: transparent; border: 2px solid #e2e8f0; color: #475569; }
+    .btn-outline-custom:hover { background: var(--theme-gradient); color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3); border-color: transparent;}
+    
+    .soft-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+</style>
+
+<div class="container theme-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-header d-flex align-items-center gap-3">
+            <i class="fas fa-file-signature" style="font-size: 32px; color: #9333ea; background: #f3e8ff; padding: 15px; border-radius: 15px;"></i>
+            <h1 class="mb-0">My Exams</h1>
+        </div>
+        <a href="{% url 'courses:course_list' %}" class="btn-custom btn-primary-custom" style="width: auto;">
+            <i class="fas fa-plus-circle"></i> Create Exam
+        </a>
+    </div>
+
+    <div class="row">
+        {% if exams %}
+            {% for exam in exams %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="exam-card">
+                        <div style="flex-grow: 1;">
+                            <h5 style="font-weight: 700; color: #0f172a; margin-bottom: 8px;">{{ exam.title }}</h5>
+                            <p class="text-muted" style="font-size: 14px;">{{ exam.description|truncatewords:15 }}</p>
+                            
+                            <div class="exam-meta-box">
+                                <span class="w-100 mb-1"><i class="fas fa-book"></i> {{ exam.course.title|truncatechars:25 }}</span>
+                                <span><i class="fas fa-clock"></i> {{ exam.duration_minutes }}m</span>
+                                <span><i class="fas fa-question-circle"></i> {{ exam.get_question_count }} Qs</span>
+                                <span><i class="fas fa-star"></i> {{ exam.total_marks }} Pts</span>
+                            </div>
+
+                            <div class="mb-3">
+                                {% if exam.is_published %}
+                                    <span class="soft-badge" style="background: #dcfce7; color: #166534;">Published</span>
+                                {% else %}
+                                    <span class="soft-badge" style="background: #f1f5f9; color: #475569;">Draft</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex flex-column gap-2 mt-3">
+                            <a href="{% url 'exams:exam_detail' exam.pk %}" class="btn-custom btn-primary-custom"><i class="fas fa-eye"></i> View Details</a>
+                            <a href="{% url 'exams:exam_edit' exam.pk %}" class="btn-custom btn-outline-custom"><i class="fas fa-pen"></i> Edit Settings</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center" style="padding: 60px 20px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;">
+                <i class="fas fa-clipboard-list" style="font-size: 50px; color: #cbd5e1; margin-bottom: 20px;"></i>
+                <h4 style="font-weight: 700; color: #0f172a;">No Exams Created Yet</h4>
+                <p class="text-muted">You need to go to a Course to create an exam for it.</p>
+                <a href="{% url 'courses:course_list' %}" class="btn-custom btn-primary-custom" style="width: auto; margin-top: 10px;">Go to My Courses</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

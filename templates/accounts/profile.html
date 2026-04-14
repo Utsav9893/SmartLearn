@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { 
+        font-family: 'Poppins', sans-serif; 
+        padding: 40px 20px;
+        padding-top: 5px; /* Cleaned up padding */
+        color: #0f172a; 
+        --theme-blue: #0072ff; 
+        --theme-purple: #9333ea; 
+        --theme-pink: #ec4899; 
+        --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); 
+    }
+    
+    .modern-card { 
+        background: #ffffff; 
+        border-radius: 20px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+        border: 1px solid #f1f5f9; 
+        padding: 40px; 
+        margin-bottom: 30px; 
+    }
+    
+    .modern-card-header { 
+        text-align: center; 
+        margin-bottom: 35px; 
+        border-bottom: 2px solid #f1f5f9; 
+        padding-bottom: 20px; 
+    }
+    .modern-card-header h3 { font-weight: 800; color: #0f172a; margin-top: 15px; font-size: 28px; }
+    .modern-card-header i { font-size: 50px; background: var(--theme-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    /* Form Elements */
+    .form-label-custom { font-weight: 600; color: #334155; margin-bottom: 8px; font-size: 14px; display: block; }
+    
+    .form-control-custom { width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; background: #f8fafc; transition: 0.3s; color: #0f172a; }
+    .form-control-custom:focus { border-color: #9333ea; background: #fff; box-shadow: 0 0 0 4px rgba(147,51,234,0.1); outline: none; }
+    
+    /* Disabled Fields Styling */
+    .form-control-disabled { background: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
+    
+    .form-text-muted { font-size: 12px; color: #94a3b8; margin-top: 6px; display: block; font-weight: 500; }
+
+    /* Buttons */
+    .btn-primary-custom { background: var(--theme-gradient); color: white; padding: 15px 30px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; width: 100%; transition: 0.3s; margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; }
+    .btn-primary-custom:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(147,51,234,0.3); color: white; }
+
+    .btn-dark-custom { background: #0f172a; color: white; padding: 15px 30px; border-radius: 12px; font-weight: 700; font-size: 16px; border: none; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; }
+    .btn-dark-custom:hover { background: #1e293b; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(15, 23, 42, 0.3); color: white; }
+
+    /* Section divider */
+    .section-title { font-size: 16px; font-weight: 700; color: var(--theme-purple); margin: 10px 0 15px; text-transform: uppercase; letter-spacing: 1px; }
+</style>
+
+<div class="container theme-container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="modern-card">
+                
+                <div class="modern-card-header">
+                    <i class="fas fa-id-card-alt"></i>
+                    <h3>My Profile</h3>
+                    <p class="text-muted mb-0">Manage your personal information and account details.</p>
+                </div>
+                
+                <div class="card-body p-0">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="section-title"><i class="fas fa-user mr-2"></i> Personal Details</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="first_name" class="form-label-custom">First Name</label>
+                                <input type="text" class="form-control-custom" id="first_name" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="last_name" class="form-label-custom">Last Name</label>
+                                <input type="text" class="form-control-custom" id="last_name" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                        
+                        <div class="section-title"><i class="fas fa-shield-alt mr-2"></i> Account Info</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="username" class="form-label-custom">Username</label>
+                                <input type="text" class="form-control-custom form-control-disabled" id="username" value="{{ user.username }}" disabled>
+                                <span class="form-text-muted"><i class="fas fa-lock"></i> Username cannot be changed</span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="role" class="form-label-custom">Account Role</label>
+                                <input type="text" class="form-control-custom form-control-disabled" id="role" value="{{ profile.get_role_display }}" disabled>
+                                <span class="form-text-muted"><i class="fas fa-lock"></i> Role cannot be changed</span>
+                            </div>
+                        </div>
+
+                        <div class="section-title"><i class="fas fa-address-book mr-2"></i> Contact Details</div>
+                        <div class="mb-4">
+                            <label for="email" class="form-label-custom">Email Address</label>
+                            <input type="email" class="form-control-custom form-control-disabled" id="email" name="email" value="{{ user.email }}" disabled>
+                            <span class="form-text-muted"><i class="fas fa-lock"></i> Email cannot be changed</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="phone" class="form-label-custom">Phone Number</label>
+                            <input type="text" class="form-control-custom" id="phone" name="phone" value="{{ profile.phone }}">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="address" class="form-label-custom">Full Address</label>
+                            <textarea class="form-control-custom" id="address" name="address" rows="3">{{ profile.address }}</textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary-custom">
+                            <i class="fas fa-user-edit"></i> Update Profile
+                        </button>
+                    </form>
+
+                    <hr class="my-5" style="border-top: 2px solid #f1f5f9;">
+
+                    <div class="section-title"><i class="fas fa-key mr-2"></i> Security</div>
+                    <form action="{% url 'accounts:change_password' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="old_password" class="form-label-custom">Current Password</label>
+                            <input type="password" class="form-control-custom" id="old_password" name="old_password" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="new_password1" class="form-label-custom">New Password</label>
+                                <input type="password" class="form-control-custom" id="new_password1" name="new_password1" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="new_password2" class="form-label-custom">Confirm New Password</label>
+                                <input type="password" class="form-control-custom" id="new_password2" name="new_password2" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-dark-custom">
+                            <i class="fas fa-lock"></i> Change Password
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

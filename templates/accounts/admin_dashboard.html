@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - E-Learn Platform{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Loading analytics data...");
+        fetch('{% url "accounts:admin_analytics_data" %}')
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data received:", data);
+                // Helper function to generate random colors for charts
+                function generateRandomColors(num) {
+                    const colors = [];
+                    for (let i = 0; i < num; i++) {
+                        const r = Math.floor(Math.random() * 255);
+                        const g = Math.floor(Math.random() * 255);
+                        const b = Math.floor(Math.random() * 255);
+                        colors.push(`rgba(${r},${g},${b},0.7)`);
+                    }
+                    return colors;
+                }
+
+                try {
+                    // 1. Pie Chart – Course Enrollment Distribution
+                    if (data.course_enrollment && data.course_enrollment.values.length > 0) {
+                        new Chart(document.getElementById('courseEnrollmentChart'), {
+                            type: 'pie',
+                            data: {
+                                labels: data.course_enrollment.labels,
+                                datasets: [{
+                                    data: data.course_enrollment.values,
+                                    backgroundColor: generateRandomColors(data.course_enrollment.values.length),
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: { position: 'top' }
+                                }
+                            }
+                        });
+                    }
+
+                    // 2. Line Chart – Monthly Student Registration Growth
+                    if (data.monthly_registrations) {
+                        new Chart(document.getElementById('monthlyRegistrationChart'), {
+                            type: 'line',
+                            data: {
+                                labels: data.monthly_registrations.labels,
+                                datasets: [{
+                                    label: 'New Students',
+                                    data: data.monthly_registrations.values,
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    fill: true,
+                                    tension: 0.1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+
+                    // 3. Bar Chart – Course Completion Rate
+                    if (data.course_completion && data.course_completion.labels.length > 0) {
+                        new Chart(document.getElementById('courseCompletionChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: data.course_completion.labels,
+                                datasets: [
+                                    {
+                                        label: 'Completed',
+                                        data: data.course_completion.completed,
+                                        backgroundColor: 'rgba(60, 179, 113, 0.7)',
+                                    },
+                                    {
+                                        label: 'Not Completed',
+                                        data: data.course_completion.not_completed,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: { stacked: true },
+                                    y: { stacked: true, beginAtZero: true }
+                                }
+                            }
+                        });
+                    }
+
+                    // 4. Doughnut Chart – Pass vs Fail Ratio
+                    if (data.pass_fail_ratio) {
+                        new Chart(document.getElementById('passFailRatioChart'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: data.pass_fail_ratio.labels,
+                                datasets: [{
+                                    data: data.pass_fail_ratio.values,
+                                    backgroundColor: ['rgba(50, 205, 50, 0.7)', 'rgba(255, 69, 0, 0.7)'],
+                                }]
+                            },
+                            options: { responsive: true }
+                        });
+                    }
+
+                    // 5. Bar Chart – Score Distribution
+                    if (data.score_distribution) {
+                        new Chart(document.getElementById('scoreDistributionChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: data.score_distribution.labels,
+                                datasets: [{
+                                    label: 'Number of Students',
+                                    data: data.score_distribution.values,
+                                    backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+
+                    // 6. Horizontal Bar Chart – Teacher Performance
+                    if (data.teacher_performance && data.teacher_performance.labels.length > 0) {
+                        new Chart(document.getElementById('teacherPerformanceChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: data.teacher_performance.labels,
+                                datasets: [{
+                                    label: 'Average Score (%)',
+                                    data: data.teacher_performance.values,
+                                    backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                scales: { x: { beginAtZero: true, max: 100 } }
+                            }
+                        });
+                    }
+
+                    // 7. Bar Chart – Tab Switching Activity
+                    if (data.tab_switching_activity && data.tab_switching_activity.labels.length > 0) {
+                        new Chart(document.getElementById('tabSwitchingChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: data.tab_switching_activity.labels,
+                                datasets: [{
+                                    label: 'Total Tab Switches',
+                                    data: data.tab_switching_activity.values,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+
+                    // 8. Bar Chart – Top 5 Students
+                    if (data.top_students && data.top_students.labels.length > 0) {
+                        new Chart(document.getElementById('topStudentsChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: data.top_students.labels,
+                                datasets: [{
+                                    label: 'Average Exam Score (%)',
+                                    data: data.top_students.values,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: { y: { beginAtZero: true, max: 100 } }
+                            }
+                        });
+                    }
+
+                    // 9. Bar Chart – Most Engaged Courses
+                    if (data.engaged_courses && data.engaged_courses.labels.length > 0) {
+                        new Chart(document.getElementById('engagedCoursesChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: data.engaged_courses.labels,
+                                datasets: [{
+                                    label: 'Average Progress (%)',
+                                    data: data.engaged_courses.values,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: { y: { beginAtZero: true, max: 100 } }
+                            }
+                        });
+                    }
+
+                    // 10. Pie Chart – Active vs Inactive Users
+                    if (data.active_inactive_users) {
+                        new Chart(document.getElementById('activeInactiveUsersChart'), {
+                            type: 'pie',
+                            data: {
+                                labels: data.active_inactive_users.labels,
+                                datasets: [{
+                                    data: data.active_inactive_users.values,
+                                    backgroundColor: ['rgba(50, 205, 50, 0.7)', 'rgba(169, 169, 169, 0.7)'],
+                                }]
+                            },
+                            options: { responsive: true }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error rendering charts:", e);
+                }
+
+            })
+            .catch(error => {
+                console.error('Error fetching analytics data:', error);
+                alert("Failed to load analytics charts. Check console for details.");
+            });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container { font-family: 'Poppins', sans-serif; padding: 40px 0; padding:0px; color: #0f172a; }
+    .page-header { margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+    .page-header i { font-size: 32px; color: #10b981; background: #d1fae5; padding: 15px; border-radius: 15px; }
+    .page-header h1 { font-size: 32px; font-weight: 700; margin: 0; }
+
+    /* Admin Stat Cards */
+    .stat-card {
+        background: #ffffff; border-radius: 20px; padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+        display: flex; align-items: center; gap: 15px; transition: all 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
+    .stat-icon { width: 55px; height: 55px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
+    
+    .icon-students { background: #e0e7ff; color: #4f46e5; }
+    .icon-teachers { background: #dcfce7; color: #16a34a; }
+    .icon-courses { background: #fef3c7; color: #d97706; }
+    .icon-exams { background: #fee2e2; color: #dc2626; }
+
+    .stat-details h3 { font-size: 24px; font-weight: 700; margin: 0; color: #0f172a; }
+    .stat-details p { margin: 0; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; }
+
+    /* Modern Cards */
+    .modern-card { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; margin-bottom: 30px; }
+    .modern-card-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; background: #fafaf9; border-radius: 20px 20px 0 0; }
+    .modern-card-header h5 { margin: 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; color: #334155; }
+    .modern-card-header h5 i { color: #4f46e5; }
+    .modern-card-body { padding: 25px; }
+
+    /* Quick Actions */
+    .quick-action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+    .action-btn { 
+        padding: 15px; border-radius: 12px; text-align: center; text-decoration: none; 
+        font-weight: 600; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .action-btn i { font-size: 24px; }
+    
+    .action-admin { background: #4f46e5; color: white; }
+    .action-admin:hover { background: #4338ca; color: white; transform: translateY(-3px); }
+    .action-users { background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; }
+    .action-users:hover { background: #e2e8f0; color: #0f172a; transform: translateY(-3px); }
+
+    /* Reports Section */
+    .report-category { margin-bottom: 30px; }
+    .report-category:last-child { margin-bottom: 0; }
+    .report-category h6 { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+    .report-btn-container { display: flex; flex-wrap: wrap; gap: 10px; }
+    .report-btn { 
+        padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 500; 
+        text-decoration: none; transition: 0.3s; border: 1px solid transparent; 
+    }
+    
+    .btn-student { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .btn-student:hover { background: #1d4ed8; color: white; }
+    
+    .btn-teacher { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+    .btn-teacher:hover { background: #15803d; color: white; }
+    
+    .btn-course { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+    .btn-course:hover { background: #b45309; color: white; }
+    
+    .btn-exam { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .btn-exam:hover { background: #b91c1c; color: white; }
+    
+    .btn-platform { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+    .btn-platform:hover { background: #475569; color: white; }
+</style>
+
+<div class="container dashboard-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <i class="fas fa-shield-alt"></i>
+                <h1>System Administration</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon icon-students"><i class="fas fa-user-graduate"></i></div>
+                <div class="stat-details">
+                    <h3>{{ total_students }}</h3>
+                    <p>Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon icon-teachers"><i class="fas fa-users"></i></div>
+                <div class="stat-details">
+                    <h3>{{ total_enrollments }}</h3>
+                    <p>Enrollments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon icon-courses"><i class="fas fa-book-open"></i></div>
+                <div class="stat-details">
+                    <h3>{{ total_courses }}</h3>
+                    <p>Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon icon-exams"><i class="fas fa-file-signature"></i></div>
+                <div class="stat-details">
+                    <h3>{{ total_exams }}</h3>
+                    <p>Exams</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="row mb-4">
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5><i class="fas fa-chart-line"></i> Analytics Overview</h5>
+                </div>
+                <div class="modern-card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Course Enrollment Distribution</h6>
+                            <canvas id="courseEnrollmentChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Monthly Student Registration Growth</h6>
+                            <canvas id="monthlyRegistrationChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Course Completion Rate</h6>
+                            <canvas id="courseCompletionChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Exam Pass vs Fail Ratio</h6>
+                            <canvas id="passFailRatioChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Exam Score Distribution</h6>
+                            <canvas id="scoreDistributionChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Teacher Performance (Avg Score)</h6>
+                            <canvas id="teacherPerformanceChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Tab Switching Activity (Top 10 Exams)</h6>
+                            <canvas id="tabSwitchingChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Top 5 Students (Avg Score)</h6>
+                            <canvas id="topStudentsChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Most Engaged Courses (Avg Progress)</h6>
+                            <canvas id="engagedCoursesChart"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-center mb-3">Active vs Inactive Users</h6>
+                            <canvas id="activeInactiveUsersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                </div>
+                <div class="modern-card-body">
+                    <div class="quick-action-grid">
+                        <a href="/admin/" class="action-btn action-admin">
+                            <i class="fas fa-cogs"></i> Django Admin Panel
+                        </a>
+                        <a href="/admin/auth/user/" class="action-btn action-users">
+                            <i class="fas fa-users-cog"></i> Manage Users
+                        </a>
+                        <a href="/admin/courses/course/" class="action-btn action-users">
+                            <i class="fas fa-book"></i> Manage Courses
+                        </a>
+                        <a href="/admin/exams/exam/" class="action-btn action-users">
+                            <i class="fas fa-file-alt"></i> Manage Exams
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5><i class="fas fa-chart-pie"></i> Downloadable Reports (.xlsx)</h5>
+                </div>
+                <div class="modern-card-body">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="report-category">
+                                <h6><i class="fas fa-user-graduate text-primary mr-2"></i> Student Data</h6>
+                                <div class="report-btn-container">
+                                    <a href="{% url 'accounts:report_student_enrollment' %}" class="report-btn btn-student">Enrollment</a>
+                                    <a href="{% url 'accounts:report_course_student_list' %}" class="report-btn btn-student">Course-wise List</a>
+                                    <a href="{% url 'accounts:report_student_progress' %}" class="report-btn btn-student">Progress</a>
+                                    <a href="{% url 'accounts:report_student_exam' %}" class="report-btn btn-student">Exam Performance</a>
+                                </div>
+                            </div>
+
+                            <div class="report-category">
+                                <h6><i class="fas fa-chalkboard-teacher text-success mr-2"></i> Teacher Data</h6>
+                                <div class="report-btn-container">
+                                    <a href="{% url 'accounts:report_teacher_activity' %}" class="report-btn btn-teacher">Activity Log</a>
+                                    <a href="{% url 'accounts:report_teacher_performance' %}" class="report-btn btn-teacher">Performance</a>
+                                    <a href="{% url 'accounts:report_course_teacher' %}" class="report-btn btn-teacher">Course Alignment</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="report-category">
+                                <h6><i class="fas fa-book text-warning mr-2"></i> Course & Exam Metrics</h6>
+                                <div class="report-btn-container">
+                                    <a href="{% url 'accounts:report_course_enrollment' %}" class="report-btn btn-course">Enrollment Summary</a>
+                                    <a href="{% url 'accounts:report_course_completion' %}" class="report-btn btn-course">Completion Rates</a>
+                                    <a href="{% url 'accounts:report_course_revenue' %}" class="report-btn btn-course">Revenue</a>
+                                    <a href="{% url 'accounts:report_exam_results' %}" class="report-btn btn-exam">All Results</a>
+                                    <a href="{% url 'accounts:report_exam_pass_fail' %}" class="report-btn btn-exam">Pass/Fail Ratio</a>
+                                    <a href="{% url 'accounts:report_exam_score_stats' %}" class="report-btn btn-exam">Score Analytics</a>
+                                </div>
+                            </div>
+
+                            <div class="report-category">
+                                <h6><i class="fas fa-server text-secondary mr-2"></i> Platform Overview</h6>
+                                <div class="report-btn-container">
+                                    <a href="{% url 'accounts:report_platform_summary' %}" class="report-btn btn-platform">System Summary</a>
+                                    <a href="{% url 'accounts:report_monthly_growth' %}" class="report-btn btn-platform">Monthly Growth</a>
+                                    <a href="{% url 'accounts:report_most_popular_course' %}" class="report-btn btn-platform">Top Courses</a>
+                                    <a href="{% url 'accounts:report_most_active_teacher' %}" class="report-btn btn-platform">Top Teachers</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

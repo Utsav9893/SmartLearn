@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 20px 0; color: #0f172a; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    .modern-card { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #f1f5f9; margin-bottom: 30px; overflow: hidden; }
+    .modern-card-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; background: #fafaf9; display: flex; justify-content: space-between; align-items: center; }
+    .modern-card-header h5 { margin: 0; font-weight: 700; color: #334155; }
+    .btn-custom { padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border: none; transition: 0.3s; }
+    .btn-primary-custom { background: var(--theme-gradient); color: white; }
+    .btn-primary-custom:hover { background: linear-gradient(135deg, #005bb5, #7e22ce); color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3); }
+    .btn-outline-custom { border: 2px solid #9333ea; color: #9333ea; background: transparent; }
+    .btn-outline-custom:hover { background: var(--theme-gradient); color: white; transform: translateY(-2px); border-color: transparent; }
+    .btn-danger-outline { border: 2px solid #ef4444; color: #ef4444; background: transparent; }
+    .btn-danger-outline:hover { background: #ef4444; color: white; transform: translateY(-2px); }
+    
+    .table-custom th { border-bottom: 2px solid #f1f5f9; color: #64748b; padding: 15px; font-weight: 600; }
+    .table-custom td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-weight: 500;}
+    .list-item { padding: 15px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+</style>
+
+<div class="container theme-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="modern-card" style="padding: 30px;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 style="font-weight: 800; color: #0f172a;">{{ course.title }}</h1>
+                        <p class="text-muted mt-2" style="font-size: 16px;">{{ course.description }}</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'courses:course_report_excel' course.pk %}" class="btn-custom btn-primary-custom">
+                            <i class="fas fa-file-excel"></i> Download Report
+                        </a>
+                        <a href="{% url 'courses:course_edit' course.pk %}" class="btn-custom btn-outline-custom">
+                            <i class="fas fa-edit"></i> Edit Course
+                        </a>
+                    </div>
+                </div>
+                
+                <hr class="my-4" style="border-top: 1px solid #f1f5f9;">
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="p-3 rounded-4" style="background: #f8fafc; border: 1px solid #f1f5f9;">
+                            <p class="text-muted mb-1" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Students</p>
+                            <h3 class="mb-0" style="font-weight: 700; color: #0072ff;">{{ total_enrolled }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 rounded-4" style="background: #f8fafc; border: 1px solid #f1f5f9;">
+                            <p class="text-muted mb-1" style="font-size: 12px; font-weight: 600; text-transform: uppercase;">Exam Attempts</p>
+                            <h3 class="mb-0" style="font-weight: 700; color: #9333ea;">{{ exam_attempts }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5><i class="fas fa-photo-video" style="color: #0072ff; margin-right: 8px;"></i> Course Lessons</h5>
+                    <a href="{% url 'courses:lesson_create' course.pk %}" class="btn-custom btn-primary-custom">
+                        <i class="fas fa-plus"></i> Add Lesson
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if lessons %}
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead style="background: #f8fafc;">
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lesson in lessons %}
+                                        <tr>
+                                            <td><span style="background: #f1f5f9; padding: 5px 12px; border-radius: 8px; font-weight: 700;">{{ lesson.order }}</span></td>
+                                            <td style="color: #0f172a;">{{ lesson.title }}</td>
+                                            <td>
+                                                <span style="padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: {% if lesson.lesson_type == 'video' %}#e0e7ff; color: #4f46e5;{% else %}#fce7f3; color: #db2777;{% endif %}">
+                                                    {{ lesson.get_lesson_type_display }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{% url 'courses:lesson_edit' lesson.pk %}" class="btn-custom btn-outline-custom" style="padding: 6px 12px;"><i class="fas fa-pen"></i></a>
+                                                <a href="{% url 'courses:lesson_delete' lesson.pk %}" class="btn-custom btn-danger-outline" style="padding: 6px 12px;"><i class="fas fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <i class="fas fa-folder-plus" style="font-size: 40px; color: #cbd5e1; margin-bottom: 15px;"></i>
+                            <p class="text-muted">No lessons added yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h5><i class="fas fa-file-alt" style="color: #9333ea; margin-right: 8px;"></i> Course Exams</h5>
+                    <a href="{% url 'exams:exam_create' course.pk %}" class="btn-custom btn-primary-custom">
+                        <i class="fas fa-plus"></i> Create Exam
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if exams %}
+                        {% for exam in exams %}
+                            <div class="list-item">
+                                <div>
+                                    <h6 style="font-weight: 700; color: #0f172a; margin-bottom: 5px;">{{ exam.title }}</h6>
+                                    <small class="text-muted"><i class="fas fa-clock"></i> {{ exam.duration_minutes }} mins &nbsp;|&nbsp; <i class="fas fa-question-circle"></i> {{ exam.get_question_count }} questions</small>
+                                </div>
+                                <a href="{% url 'exams:exam_detail' exam.pk %}" class="btn-custom btn-outline-custom">Manage</a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center p-5">
+                            <i class="fas fa-clipboard-list" style="font-size: 40px; color: #cbd5e1; margin-bottom: 15px;"></i>
+                            <p class="text-muted">No exams created yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

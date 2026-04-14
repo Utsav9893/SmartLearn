@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    /* Scoped styles for the registration page */
+    .register-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top right, #eef2ff, #f8fafc);
+        padding: 60px 20px;
+        padding-top: 20px;
+        font-family: 'Poppins', sans-serif;
+
+        background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+
+    }
+
+    .register-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* Changed from gradient to a simple dark tint for readability */
+        background: rgba(0, 0, 0, 0.5); 
+        z-index: 1;
+    }
+
+    .register-card {
+        background: #ffffff;
+        z-index: 2;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        width: 100%;
+        max-width: 500px; /* Slightly wider than login for the 2-column layout */
+        padding: 40px;
+        border: 1px solid #f1f5f9;
+        animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .register-header i {
+        font-size: 45px;
+        color: #4f46e5;
+        margin-bottom: 15px;
+    }
+
+    .register-header h2 {
+        font-size: 28px;
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .register-header p {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    /* Used for text, email, password, and select */
+    .form-control-custom {
+        width: 100%;
+        padding: 14px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        outline: none;
+        color: #0f172a;
+        background-color: #f8fafc;
+    }
+
+    .form-control-custom:focus {
+        border-color: #4f46e5;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-control-custom::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Custom styles for the dropdown to match inputs */
+    select.form-control-custom {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 16px;
+    }
+
+    /* Grid for passwords to save vertical space */
+    .password-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 14px;
+        background: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        margin-top: 10px;
+    }
+
+    .btn-register:hover {
+        background: #4338ca;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .register-footer {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .register-footer a {
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .register-footer a:hover {
+        color: #ec4899;
+    }
+
+    /* Stack the password fields on mobile */
+    @media (max-width: 480px) {
+        .password-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .register-card {
+            padding: 30px 20px;
+        }
+    }
+</style>
+
+<div class="register-wrapper">
+    <div class="register-overlay"></div>
+
+    <div class="register-card">
+        <div class="register-header">
+            <i class="fas fa-user-plus"></i>
+            <h2>Create an Account</h2>
+            <p>Join our community and start learning today.</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="password-grid">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" class="form-control-custom" id="first_name" name="first_name" placeholder="First Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" class="form-control-custom" id="last_name" name="last_name" placeholder="Last Name" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control-custom" id="username" name="username" placeholder="Choose a username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control-custom" id="email" name="email" placeholder="name@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="role">Register as</label>
+                <select class="form-control-custom" id="role" name="role" required>
+                    <option value="student" selected>Student</option>
+                    <option value="teacher">Instructor</option>
+                </select>
+            </div>
+
+            <div class="password-grid">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control-custom" id="password" name="password" placeholder="Create password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password2">Confirm Password</label>
+                    <input type="password" class="form-control-custom" id="password2" name="password2" placeholder="Repeat password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register">Create Account</button>
+        </form>
+        
+        <div class="register-footer">
+            <p>Already have an account? <a href="{% url 'accounts:login' %}">Sign in here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

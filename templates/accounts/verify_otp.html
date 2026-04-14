@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    /* Scoped styles for the OTP page */
+    .otp-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top right, #eef2ff, #f8fafc);
+        padding: 40px 20px;
+        padding-top: 20px;
+        font-family: 'Poppins', sans-serif;
+        --theme-blue: #0072ff;
+        --theme-purple: #9333ea;
+        --theme-pink: #ec4899;
+        --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea);
+        background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+
+    }
+    .otp-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* Changed from gradient to a simple dark tint for readability */
+        background: rgba(0, 0, 0, 0.5); 
+        z-index: 1;
+    }
+
+    .otp-card {
+        background: #ffffff;
+        border-radius: 20px;
+        z-index: 2;
+        /* Dark shadow for pop effect */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 450px;
+        padding: 45px 40px;
+        border: 1px solid #f1f5f9;
+        animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .otp-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .otp-header i {
+        font-size: 55px;
+        /* Gradient icon */
+        background: var(--theme-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .otp-header h2 {
+        font-size: 26px;
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .otp-header p {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .otp-header strong {
+        color: #0f172a;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 12px;
+        color: #334155;
+        font-weight: 600;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 24px; /* Large text for OTP */
+        font-weight: 700;
+        letter-spacing: 12px; /* Spaced out numbers */
+        text-align: center;
+        transition: all 0.3s ease;
+        outline: none;
+        color: var(--theme-purple);
+        background-color: #f8fafc;
+    }
+
+    .form-control-custom:focus {
+        border-color: var(--theme-purple);
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+    }
+
+    .form-control-custom::placeholder {
+        color: #cbd5e1;
+        font-weight: 400;
+        letter-spacing: 8px;
+    }
+
+    .btn-otp {
+        width: 100%;
+        padding: 15px;
+        background: var(--theme-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+    }
+
+    .btn-otp:hover {
+        background: linear-gradient(135deg, #005bb5, #7e22ce);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
+    }
+
+    .otp-footer {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .otp-footer a {
+        color: var(--theme-blue);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .otp-footer a:hover {
+        color: var(--theme-purple);
+        text-decoration: underline;
+    }
+</style>
+
+<div class="otp-wrapper">
+    <div class="otp-overlay"></div>
+    <div class="otp-card">
+        <div class="otp-header">
+            <i class="fas fa-shield-alt"></i>
+            <h2>OTP Verification</h2>
+            <p>An OTP has been sent to <br><strong>{{ email }}</strong>.<br>Please enter it below to verify.</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="otp">Enter 6-Digit OTP</label>
+                <input type="text" class="form-control-custom" id="otp" name="otp" maxlength="6" pattern="\d{6}" required placeholder="######" autocomplete="one-time-code">
+            </div>
+            
+            <button type="submit" class="btn-otp">Verify Account</button>
+        </form>
+        
+        <div class="otp-footer">
+            <p>Didn't receive OTP? <a href="{% url 'accounts:resend_otp' %}">Resend OTP</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

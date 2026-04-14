@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}My Exam Results - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 40px 0; padding-top: 20px; color: #0f172a; --theme-blue: #0072ff; --theme-purple: #9333ea; --theme-pink: #ec4899; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    .page-header { margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+    .page-header i { font-size: 32px; color: var(--theme-purple); background: #f3e8ff; padding: 15px; border-radius: 15px; }
+    .page-header h1 { font-size: 32px; font-weight: 700; margin: 0; background: linear-gradient(135deg, var(--theme-blue) 0%, var(--theme-purple) 50%, var(--theme-pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; }
+    
+    .modern-card { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #f1f5f9; overflow: hidden; }
+    
+    .table-custom { margin-bottom: 0; }
+    .table-custom thead { background: #f8fafc; }
+    .table-custom th { color: #64748b; font-weight: 600; padding: 18px 20px; border-bottom: 2px solid #e2e8f0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .table-custom td { padding: 18px 20px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-weight: 500; color: #334155; }
+    .table-custom tbody tr:hover { background-color: #f8fafc; }
+
+    .soft-badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; text-align: center; min-width: 60px;}
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef9c3; color: #854d0e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+
+    .btn-custom { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border: none; transition: 0.3s; cursor: pointer; }
+    .btn-primary-custom { background: var(--theme-gradient); color: white; }
+    .btn-primary-custom:hover { background: linear-gradient(135deg, #005bb5, #7e22ce); color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3); }
+    
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state i { font-size: 50px; color: #cbd5e1; margin-bottom: 20px; display: block; }
+</style>
+
+<div class="container theme-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <i class="fas fa-clipboard-list"></i>
+                <h1>My Exam Results</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="modern-card">
+                {% if exam_results %}
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Exam</th>
+                                    <th>Course</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Time Taken</th>
+                                    <th>Submitted</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in exam_results %}
+                                    <tr>
+                                        <td style="color: #0f172a; font-weight: 600;">{{ result.exam.title }}</td>
+                                        <td><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 12px; color: #475569;"><i class="fas fa-book"></i> {{ result.exam.course.title|truncatechars:20 }}</span></td>
+                                        <td><strong>{{ result.score }}</strong> <span class="text-muted">/ {{ result.total_marks }}</span></td>
+                                        <td>
+                                            <span class="soft-badge {% if result.percentage >= 70 %}badge-success{% elif result.percentage >= 50 %}badge-warning{% else %}badge-danger{% endif %}">
+                                                {{ result.percentage }}%
+                                            </span>
+                                        </td>
+                                        <td><i class="far fa-clock text-muted"></i> {{ result.time_taken_minutes }} mins</td>
+                                        <td style="font-size: 13px; color: #64748b;">{{ result.submitted_at|date:"M d, Y H:i" }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'exams:exam_result' result.pk %}" class="btn-custom btn-primary-custom">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <h4 style="font-weight: 700; color: #0f172a;">No Exam Results Found</h4>
+                        <p class="text-muted">You haven't completed any exams yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

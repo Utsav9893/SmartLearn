@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Lesson - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 40px 0; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    
+    .modern-card { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #f1f5f9; padding: 40px; margin-bottom: 30px; }
+    .modern-card-header { text-align: center; margin-bottom: 30px; }
+    .modern-card-header h3 { font-weight: 700; color: #0f172a; margin-top: 10px; }
+    .modern-card-header i { font-size: 40px; background: var(--theme-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    /* Form Elements */
+    .form-label-custom { font-weight: 600; color: #334155; margin-bottom: 8px; font-size: 14px; display: block; }
+    .form-control-custom { width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; background: #f8fafc; transition: 0.3s; color: #0f172a; }
+    .form-control-custom:focus { border-color: #9333ea; background: #fff; box-shadow: 0 0 0 4px rgba(147,51,234,0.1); outline: none; }
+    
+    /* File Input Specific */
+    input[type="file"].form-control-custom { padding: 10px 15px; cursor: pointer; }
+    .file-upload-box { background: #f8fafc; border: 1px dashed #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    
+    /* Select Dropdown Fix */
+    select.form-control-custom { cursor: pointer; appearance: auto; }
+
+    /* Buttons */
+    .btn-primary-custom { background: var(--theme-gradient); color: white; padding: 14px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; border: none; width: 100%; transition: 0.3s; margin-top: 10px; }
+    .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(147,51,234,0.3); color: white; }
+    .btn-secondary-custom { background: transparent; color: #64748b; border: 2px solid #cbd5e1; padding: 12px 20px; border-radius: 12px; font-weight: 600; width: 100%; text-align: center; text-decoration: none; display: block; margin-top: 15px; transition: 0.3s; }
+    .btn-secondary-custom:hover { background: #f1f5f9; color: #0f172a; transform: translateY(-2px); }
+</style>
+
+<div class="container theme-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <i class="fas fa-book-reader"></i>
+                    <h3>{{ action }} Lesson</h3>
+                </div>
+                
+                <div class="card-body p-0">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="title" class="form-label-custom">Lesson Title</label>
+                            <input type="text" class="form-control-custom" id="title" name="title" 
+                                   value="{% if lesson %}{{ lesson.title }}{% endif %}" placeholder="e.g., Introduction to Python" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="description" class="form-label-custom">Description</label>
+                            <textarea class="form-control-custom" id="description" name="description" rows="3" placeholder="Briefly describe what this lesson covers...">{% if lesson %}{{ lesson.description }}{% endif %}</textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="lesson_type" class="form-label-custom">Lesson Type</label>
+                            <select class="form-control-custom" id="lesson_type" name="lesson_type" required>
+                                <option value="video" {% if lesson and lesson.lesson_type == 'video' %}selected{% endif %}>🎥 Video Only</option>
+                                <option value="pdf" {% if lesson and lesson.lesson_type == 'pdf' %}selected{% endif %}>📄 PDF Document Only</option>
+                                <option value="both" {% if lesson and lesson.lesson_type == 'both' %}selected{% endif %}>📚 Both (Video + PDF)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="file-upload-box">
+                            <div class="mb-4">
+                                <label for="video_file" class="form-label-custom">
+                                    <i class="fas fa-video text-primary mr-1"></i> Video File 
+                                    <span id="video_required_star" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="file" class="form-control-custom" id="video_file" name="video_file" accept="video/*">
+                                {% if lesson and lesson.video_file %}
+                                    <small class="text-muted d-block mt-2">Current file: <a href="{{ lesson.video_file.url }}" target="_blank" style="color: #9333ea; font-weight: 500;">{{ lesson.video_file.name }}</a></small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-2">
+                                <label for="pdf_file" class="form-label-custom">
+                                    <i class="fas fa-file-pdf text-danger mr-1"></i> PDF File 
+                                    <span id="pdf_required_star" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="file" class="form-control-custom" id="pdf_file" name="pdf_file" accept=".pdf">
+                                {% if lesson and lesson.pdf_file %}
+                                    <small class="text-muted d-block mt-2">Current file: <a href="{{ lesson.pdf_file.url }}" target="_blank" style="color: #9333ea; font-weight: 500;">{{ lesson.pdf_file.name }}</a></small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr style="border-color: #e2e8f0; margin: 10px 0 25px;">
+
+                        <button type="submit" class="btn-primary-custom">
+                            <i class="fas fa-save mr-2"></i> {{ action }} Lesson
+                        </button>
+                        
+                        <a href="{% if lesson %}{% url 'courses:course_detail' lesson.course.pk %}{% else %}{% url 'courses:course_detail' course.pk %}{% endif %}" class="btn-secondary-custom">
+                            Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const lessonTypeSelect = document.getElementById('lesson_type');
+    const videoFile = document.getElementById('video_file');
+    const pdfFile = document.getElementById('pdf_file');
+    const videoStar = document.getElementById('video_required_star');
+    const pdfStar = document.getElementById('pdf_required_star');
+
+    function updateRequirements() {
+        const type = lessonTypeSelect.value;
+        const isEdit = {{ lesson|yesno:"true,false" }};
+        const hasVideo = {% if lesson and lesson.video_file %}true{% else %}false{% endif %};
+        const hasPdf = {% if lesson and lesson.pdf_file %}true{% else %}false{% endif %};
+
+        // Reset
+        videoFile.required = false;
+        pdfFile.required = false;
+        videoStar.style.display = 'none';
+        pdfStar.style.display = 'none';
+
+        if (type === 'video') {
+            if (!isEdit || !hasVideo) {
+                videoFile.required = true;
+                videoStar.style.display = 'inline';
+            }
+        } else if (type === 'pdf') {
+            if (!isEdit || !hasPdf) {
+                pdfFile.required = true;
+                pdfStar.style.display = 'inline';
+            }
+        } else if (type === 'both') {
+            if (!isEdit || !hasVideo) {
+                videoFile.required = true;
+                videoStar.style.display = 'inline';
+            }
+            if (!isEdit || !hasPdf) {
+                pdfFile.required = true;
+                pdfStar.style.display = 'inline';
+            }
+        }
+    }
+
+    lessonTypeSelect.addEventListener('change', updateRequirements);
+    updateRequirements();
+</script>
+{% endblock %}

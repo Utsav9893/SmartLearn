@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    /* Reset padding for full-width layout */
+    .main-content {
+        padding: 0 !important;
+    }
+
+    /* Full background image wrapper */
+    .login-wrapper {
+        min-height: calc(100vh - 76px); /* Adjust based on navbar height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        font-family: 'Poppins', sans-serif;
+        
+        /* Background Image */
+        background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    /* Simple Dark Overlay (Gradient Removed) */
+    .login-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* Changed from gradient to a simple dark tint for readability */
+        background: rgba(0, 0, 0, 0.5); 
+        z-index: 1;
+    }
+
+    /* Centered Login Card */
+    .login-card {
+        position: relative;
+        z-index: 2; /* Brings card above the overlay */
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        width: 100%;
+        max-width: 450px;
+        padding: 50px 40px;
+        margin: 20px;
+        animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .login-header i {
+        font-size: 45px;
+        background: linear-gradient(135deg, #0072ff, #9333ea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 15px;
+    }
+
+    .login-header h2 {
+        font-size: 28px;
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .login-header p {
+        color: #64748b;
+        font-size: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 14px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        outline: none;
+        color: #0f172a;
+        background-color: #f8fafc;
+    }
+
+    .form-control-custom:focus {
+        border-color: #9333ea;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+    }
+
+    .form-control-custom::placeholder {
+        color: #94a3b8;
+    }
+
+    .login-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        font-size: 14px;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #475569;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .remember-me input {
+        accent-color: #9333ea;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .forgot-link {
+        color: #0072ff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-link:hover {
+        color: #9333ea;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #0072ff, #9333ea);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .login-footer a {
+        color: #9333ea;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .login-footer a:hover {
+        color: #0072ff;
+        text-decoration: underline;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-overlay"></div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fas fa-sign-in-alt"></i>
+            <h2>Welcome Back</h2>
+            <p>Sign in to continue your learning journey.</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control-custom" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control-custom" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <div class="login-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember"> Remember me
+                </label>
+                <a href="{% url 'accounts:forgot_password' %}" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-login">Login to Account</button>
+        </form>
+        
+        <div class="login-footer">
+            <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

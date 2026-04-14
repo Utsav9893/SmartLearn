@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Question - E-Learn Platform{% endblock %}
+
+{% block content %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 40px 0; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    
+    .modern-card { background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #f1f5f9; padding: 40px; margin-bottom: 30px; }
+    .modern-card-header { text-align: center; margin-bottom: 30px; }
+    .modern-card-header h3 { font-weight: 700; color: #0f172a; margin-top: 10px; }
+    .modern-card-header i { font-size: 40px; background: var(--theme-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    /* Form Elements */
+    .form-label-custom { font-weight: 600; color: #334155; margin-bottom: 8px; font-size: 14px; }
+    .form-control-custom { width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; background: #f8fafc; transition: 0.3s; color: #0f172a; }
+    .form-control-custom:focus { border-color: #9333ea; background: #fff; box-shadow: 0 0 0 4px rgba(147,51,234,0.1); outline: none; }
+    
+    /* Specific styling for the options section to make it stand out */
+    .options-section { background: #f8fafc; padding: 25px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 25px; }
+    .options-section .form-control-custom { background: #ffffff; }
+    
+    /* Select Dropdown Fix */
+    select.form-control-custom { cursor: pointer; appearance: auto; }
+
+    /* Buttons */
+    .btn-primary-custom { background: var(--theme-gradient); color: white; padding: 14px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; border: none; width: 100%; transition: 0.3s; margin-top: 10px; }
+    .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(147,51,234,0.3); color: white; }
+    .btn-secondary-custom { background: transparent; color: #64748b; border: 2px solid #cbd5e1; padding: 12px 20px; border-radius: 12px; font-weight: 600; width: 100%; text-align: center; text-decoration: none; display: block; margin-top: 15px; transition: 0.3s; }
+    .btn-secondary-custom:hover { background: #f1f5f9; color: #0f172a; transform: translateY(-2px); }
+</style>
+
+<div class="container theme-container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>{{ action }} Question</h3>
+                </div>
+                
+                <div class="card-body p-0">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="question_text" class="form-label-custom">Question Text</label>
+                            <textarea class="form-control-custom" id="question_text" name="question_text" rows="3" placeholder="Type your question here..." required>{% if question %}{{ question.question_text }}{% endif %}</textarea>
+                        </div>
+                        
+                        <div class="options-section">
+                            <h6 style="font-weight: 700; color: #0f172a; margin-bottom: 20px;"><i class="fas fa-list-ul text-primary"></i> Multiple Choice Options</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="option1" class="form-label-custom">Option 1</label>
+                                    <input type="text" class="form-control-custom" id="option1" name="option1" 
+                                           value="{% if question %}{{ question.option1 }}{% endif %}" placeholder="First choice" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="option2" class="form-label-custom">Option 2</label>
+                                    <input type="text" class="form-control-custom" id="option2" name="option2" 
+                                           value="{% if question %}{{ question.option2 }}{% endif %}" placeholder="Second choice" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label for="option3" class="form-label-custom">Option 3</label>
+                                    <input type="text" class="form-control-custom" id="option3" name="option3" 
+                                           value="{% if question %}{{ question.option3 }}{% endif %}" placeholder="Third choice" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="option4" class="form-label-custom">Option 4</label>
+                                    <input type="text" class="form-control-custom" id="option4" name="option4" 
+                                           value="{% if question %}{{ question.option4 }}{% endif %}" placeholder="Fourth choice" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="correct_answer" class="form-label-custom"><i class="fas fa-check-circle text-success"></i> Correct Answer</label>
+                                <select class="form-control-custom" id="correct_answer" name="correct_answer" required>
+                                    <option value="" disabled {% if not question %}selected{% endif %}>Select correct option...</option>
+                                    <option value="1" {% if question and question.correct_answer == '1' %}selected{% endif %}>Option 1</option>
+                                    <option value="2" {% if question and question.correct_answer == '2' %}selected{% endif %}>Option 2</option>
+                                    <option value="3" {% if question and question.correct_answer == '3' %}selected{% endif %}>Option 3</option>
+                                    <option value="4" {% if question and question.correct_answer == '4' %}selected{% endif %}>Option 4</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <label for="marks" class="form-label-custom">Marks</label>
+                                <input type="number" class="form-control-custom" id="marks" name="marks" 
+                                       value="{% if question %}{{ question.marks }}{% else %}1{% endif %}" min="1" required>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <label for="order" class="form-label-custom">Order Number</label>
+                                <input type="number" class="form-control-custom" id="order" name="order" 
+                                       value="{% if question %}{{ question.order }}{% else %}{% if exam %}{{ exam.get_question_count }}{% else %}0{% endif %}{% endif %}" min="0" required>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: #e2e8f0; margin: 10px 0 25px;">
+
+                        <button type="submit" class="btn-primary-custom">
+                            <i class="fas fa-save mr-2"></i> {{ action }} Question
+                        </button>
+                        
+                        <a href="{% if question %}{% url 'exams:exam_detail' question.exam.pk %}{% else %}{% url 'exams:exam_detail' exam.pk %}{% endif %}" class="btn-secondary-custom">
+                            Cancel
+                        </a>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

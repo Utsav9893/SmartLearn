@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}Take Exam: {{ exam.title }} - E-Learn Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .theme-container { font-family: 'Poppins', sans-serif; padding: 40px 0; color: #0f172a; --theme-gradient: linear-gradient(135deg, #0072ff, #9333ea); }
+    
+    /* Sticky Exam Header */
+    .exam-header-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 30px;
+        position: sticky;
+        top: 80px; /* Adjust based on your navbar height */
+        z-index: 100;
+    }
+    
+    .exam-header-top {
+        padding: 20px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .exam-title { font-weight: 800; color: #0f172a; margin: 0; font-size: 24px; }
+    
+    .exam-info-bar { padding: 15px 30px; background: #f8fafc; border-radius: 0 0 20px 20px; display: flex; gap: 20px; font-size: 14px; color: #475569; font-weight: 500; }
+
+    /* Timer Styling */
+    .timer {
+        font-size: 22px;
+        font-weight: 800;
+        padding: 8px 20px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
+    .timer.warning { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+    .timer.danger { background: #fee2e2; color: #991b1b; border-color: #fca5a5; animation: pulse 1s infinite; }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Tab Switch Badge */
+    .tab-badge { font-weight: 700; padding: 10px 15px; border-radius: 10px; font-size: 14px; }
+    .tab-badge.bg-secondary { background: #f1f5f9 !important; color: #475569 !important; }
+    .tab-badge.bg-warning { background: #fef9c3 !important; color: #854d0e !important; border: 1px solid #fde047; }
+
+    /* Question Cards */
+    .question-card {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 25px;
+        padding: 30px;
+        transition: 0.3s;
+    }
+    .question-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-color: #c4b5fd; }
+    
+    .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+    .q-number { font-weight: 800; color: #9333ea; font-size: 18px; }
+    .q-marks { background: #e0e7ff; color: #4f46e5; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    
+    .q-text { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 25px; line-height: 1.5; }
+
+    /* Custom Radio Buttons */
+    .custom-radio {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: #334155;
+        user-select: none;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 15px 15px 15px 45px;
+        transition: 0.2s;
+    }
+    
+    .custom-radio:hover { background: #f1f5f9; }
+    .custom-radio input { position: absolute; opacity: 0; cursor: pointer; }
+    .checkmark { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); height: 20px; width: 20px; background-color: #fff; border: 2px solid #cbd5e1; border-radius: 50%; transition: 0.2s; }
+    
+    .custom-radio:hover input ~ .checkmark { background-color: #e2e8f0; }
+    .custom-radio input:checked ~ .checkmark { background-color: #9333ea; border-color: #9333ea; }
+    .checkmark:after { content: ""; position: absolute; display: none; }
+    .custom-radio input:checked ~ .checkmark:after { display: block; }
+    .custom-radio .checkmark:after { top: 5px; left: 5px; width: 6px; height: 6px; border-radius: 50%; background: white; }
+    .custom-radio input:checked ~ .label-text { color: #0f172a; font-weight: 600; }
+
+    /* Submit Button */
+    .btn-submit { background: var(--theme-gradient); color: white; padding: 15px 40px; border-radius: 12px; font-weight: 700; font-size: 18px; border: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(147, 51, 234, 0.2); width: 100%; max-width: 400px; margin: 0 auto; display: block; }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(147, 51, 234, 0.4); color: white;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container theme-container">
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="exam-header-card">
+                <div class="exam-header-top">
+                    <h4 class="exam-title"><i class="fas fa-file-signature" style="color: #9333ea; margin-right: 10px;"></i> {{ exam.title }}</h4>
+                    <div class="d-flex gap-3 align-items-center">
+                        <div class="timer" id="timer" data-duration-seconds="{{ duration_seconds }}">
+                            <i class="fas fa-hourglass-half"></i> <span>{{ duration_seconds }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="exam-info-bar">
+                    <span><i class="fas fa-info-circle text-primary"></i> {{ exam.description }}</span>
+                    <span><i class="fas fa-clock text-primary"></i> Duration: {{ exam.duration_minutes }} mins</span>
+                    <span><i class="fas fa-list-ol text-primary"></i> Questions: {{ questions|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="examForm" method="post" action="{% url 'exams:exam_submit' exam_result.pk %}" data-exam-result-id="{{ exam_result.pk }}" data-tab-switch-warnings="{{ exam_result.tab_switch_warnings }}">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% for question in questions %}
+                    <div class="question-card">
+                        <div class="q-header">
+                            <span class="q-number">Question {{ forloop.counter }}</span>
+                            <span class="q-marks">{{ question.marks }} Marks</span>
+                        </div>
+                        
+                        <p class="q-text">{{ question.question_text }}</p>
+                        
+                        <div class="options-container">
+                            {% for option in question.shuffled_options %}
+                                <label class="custom-radio">
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ option.0 }}">
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">{{ option.1 }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="text-center mt-5 mb-5">
+                    <button type="button" class="btn-submit" id="submitBtn">
+                        <i class="fas fa-paper-plane mr-2"></i> Submit Examination
+                    </button>
+                    <p class="text-muted mt-3" style="font-size: 13px;"><i class="fas fa-lock"></i> Ensure all answers are selected before submitting.</p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+            <div class="modal-header" style="background: var(--theme-gradient); color: white; border: none; padding: 20px;">
+                <h5 class="modal-title" id="confirmSubmitModalLabel" style="font-weight: 700;"><i class="fas fa-question-circle"></i> Confirm Submission</h5>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <i class="fas fa-paper-plane" style="font-size: 60px; color: #9333ea; margin-bottom: 20px;"></i>
+                <h5 style="color: #0f172a; font-weight: 700;">Are you sure?</h5>
+                <p style="color: #475569; margin-bottom: 0;">You cannot change your answers after submission. Do you want to submit the exam now?</p>
+            </div>
+            <div class="modal-footer" style="border: none; padding: 20px; justify-content: center; background: #f8fafc; gap: 15px;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 10px 30px; border-radius: 10px; font-weight: 600;">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmitOkBtn" style="background: var(--theme-gradient); border: none; padding: 10px 30px; border-radius: 10px; font-weight: 600;">Confirm & Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="tabSwitchFailModal" tabindex="-1" aria-labelledby="tabSwitchFailModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+            <div class="modal-header" style="background: #ef4444; color: white; border: none; padding: 20px;">
+                <h5 class="modal-title" id="tabSwitchFailModalLabel" style="font-weight: 700;"><i class="fas fa-exclamation-circle"></i> Examination Terminated</h5>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <i class="fas fa-times-circle" style="font-size: 60px; color: #ef4444; margin-bottom: 20px;"></i>
+                <h5 style="color: #0f172a; font-weight: 700;">Tab Switching Detected</h5>
+                <p style="color: #475569; margin-bottom: 0;">You left the examination window. As per the strict proctoring rules, any tab switch results in immediate submission and failure (0 marks).</p>
+            </div>
+            <div class="modal-footer" style="border: none; padding: 20px; justify-content: center; background: #f8fafc;">
+                <button type="button" class="btn btn-danger" id="tabSwitchFailOkBtn" style="padding: 10px 30px; border-radius: 10px; font-weight: 600;">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let timeLeft = parseInt((document.getElementById('timer').dataset.durationSeconds || '0'), 10);
+    const timerElement = document.getElementById('timer');
+    const timerSpan = timerElement.querySelector('span');
+    const submitBtn = document.getElementById('submitBtn');
+    const examForm = document.getElementById('examForm');
+    const confirmSubmitOkBtn = document.getElementById('confirmSubmitOkBtn');
+    let timerInterval;
+    const examResultId = parseInt((examForm.dataset.examResultId || '0'), 10);
+    
+    // Flag to prevent auto-submission during intentional submit
+    let isSubmitting = false;
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimer() {
+        timerSpan.textContent = formatTime(timeLeft);
+        
+        if (timeLeft <= 60) {
+            timerElement.className = 'timer danger';
+        } else if (timeLeft <= 300) {
+            timerElement.className = 'timer warning';
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            isSubmitting = true;
+            alert('Time is up! Your exam will be submitted automatically.');
+            examForm.submit();
+        }
+        
+        timeLeft--;
+    }
+
+    // Auto-submit exam function for proctoring violations
+    function autoSubmitExam() {
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        // Collect current radio choices
+        const formData = new FormData();
+        const radioInputs = examForm.querySelectorAll('input[type="radio"]:checked');
+        radioInputs.forEach(input => {
+            formData.append(input.name, input.value);
+        });
+
+        // Submit to the proctoring endpoint
+        fetch(`/exams/${examResultId}/tab-switch/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.auto_submitted) {
+                examForm.dataset.redirectUrl = data.redirect_url;
+                const modal = new bootstrap.Modal(document.getElementById('tabSwitchFailModal'));
+                modal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Proctoring error:', error);
+            // Fallback: just submit the form if API fails
+            examForm.submit();
+        });
+    }
+
+    // Tab switching detection
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && !isSubmitting) {
+            autoSubmitExam();
+        }
+    });
+
+    window.addEventListener('blur', function() {
+        if (!isSubmitting) {
+            autoSubmitExam();
+        }
+    });
+
+    // Prevent page refresh
+    window.addEventListener('beforeunload', function(e) {
+        if (!isSubmitting) {
+            e.preventDefault();
+            e.returnValue = 'Are you sure you want to leave? Your exam progress will be lost.';
+            return e.returnValue;
+        }
+    });
+
+    // Show custom modal instead of alert/confirm
+    submitBtn.addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+        modal.show();
+    });
+
+    // Confirm & Submit button in the modal
+    confirmSubmitOkBtn.addEventListener('click', function() {
+        isSubmitting = true;
+        examForm.submit();
+    });
+
+    // Fail modal redirect
+    document.getElementById('tabSwitchFailOkBtn').addEventListener('click', function() {
+        const url = examForm.dataset.redirectUrl;
+        if (url) window.location.href = url;
+    });
+
+    // Start timer
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+</script>
+{% endblock %}
