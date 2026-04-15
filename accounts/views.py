@@ -89,7 +89,7 @@ def register(request):
             )
 
             # Profile setup
-            profile = user.profile
+            profile, created = UserProfile.objects.get_or_create(user=user)
             profile.role = role
             otp = generate_otp()
             profile.otp = otp
