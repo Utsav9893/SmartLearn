@@ -54,9 +54,7 @@ def home(request):
     return render(request, 'accounts/home.html', {'courses': courses})
 
 def register(request):
-    """
-    User registration view
-    """
+    
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -65,60 +63,54 @@ def register(request):
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
         role = request.POST.get('role', 'student')
-        
+
         # Validation
         if password != password2:
             messages.error(request, 'Passwords do not match.')
             return render(request, 'accounts/register.html', {'role': role})
-        
+
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists.')
             return render(request, 'accounts/register.html', {'role': role})
-        
+
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already exists.')
             return render(request, 'accounts/register.html', {'role': role})
-        
+
         try:
-            with transaction.atomic():
-                # Create user
-                user = User.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=password,
-                    first_name=first_name,
-                    last_name=last_name,
-                    is_active=False  # User is inactive until OTP is verified
-                )
-                
-                # Set user role and generate OTP
-                profile = user.profile
-                profile.role = role
-                otp = generate_otp()
-                profile.otp = otp
-                profile.save()
-                
-                # Send OTP email
-                try:
-                    send_otp_email(email, otp)
-                except Exception as e:
-                    # Rollback user creation if email sending fails
-                    transaction.rollback()
-                    messages.error(request, f'Failed to send OTP email: {str(e)}. Please try again.')
-                    return render(request, 'accounts/register.html', {'role': role})
-                
-                # Store user ID in session for verification
-                request.session['verification_user_id'] = user.id
-                
-                messages.success(request, 'OTP sent to your email. Please verify to activate your account.')
-                return redirect('accounts:verify_otp')
+            # ✅ NO atomic block needed here
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                is_active=False
+            )
+
+            # Profile setup
+            profile = user.profile
+            profile.role = role
+            otp = generate_otp()
+            profile.otp = otp
+            profile.save()
+
+            # Send OTP
+            send_otp_email(email, otp)
+
+            # Store session
+            request.session['verification_user_id'] = user.id
+
+            messages.success(request, 'OTP sent to your email. Please verify.')
+            return redirect('accounts:verify_otp')
+
         except Exception as e:
-            # This handles any errors during creation or email sending
-            # The transaction.atomic() will roll back user creation if an error occurs
-            messages.error(request, f'An error occurred: {str(e)}. Please try again later.')
+            print("REGISTER ERROR:", e)
+            messages.error(request, 'Something went wrong. Please try again.')
             return render(request, 'accounts/register.html', {'role': role})
-    
+
     return render(request, 'accounts/register.html')
+
 
 def verify_otp(request):
     """
